@@ -19,6 +19,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Update local toolchain
+      run: |
+        rustup update
+        rustup install nightly
+        rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
     - uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose
