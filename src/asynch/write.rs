@@ -1,4 +1,4 @@
-use embedded_io::asynch::{Read, Write};
+use embedded_io_asynch::{Read, Write};
 
 /// A buffered [`Write`]
 ///
@@ -15,7 +15,7 @@ impl<'buf, T: Write> BufferedWrite<'buf, T> {
     }
 }
 
-impl<T: Write> embedded_io::Io for BufferedWrite<'_, T> {
+impl<T: Write> embedded_io::ErrorType for BufferedWrite<'_, T> {
     type Error = T::Error;
 }
 
