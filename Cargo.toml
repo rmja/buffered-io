@@ -11,11 +11,12 @@ keywords = ["embedded", "buffer", "embedded-io", "read", "write"]
 exclude = [".github"]
 
 [features]
-async = ["embedded-io/async"]
+async = ["embedded-io-async"]
 
 [dependencies]
-embedded-io = { version = "0.4" }
+embedded-io = { version = "0.5" }
+embedded-io-async = { version = "0.5", optional = true }
 
 [dev-dependencies]
-embedded-io = { version = "0.4", features = ["async", "std"] }
+embedded-io-adapters = { version = "0.5", features = ["std"] }
 tokio = { version = "1", features = ["macros", "rt"] }
