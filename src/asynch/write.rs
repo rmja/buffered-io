@@ -1,4 +1,4 @@
-use embedded_io_asynch::{Read, Write};
+use embedded_io_async::{Read, Write, WriteAllError};
 
 /// A buffered [`Write`]
 ///
@@ -57,7 +57,11 @@ impl<T: Write> Write for BufferedWrite<'_, T> {
 
     async fn flush(&mut self) -> Result<(), Self::Error> {
         if self.pos > 0 {
-            self.inner.write_all(&self.buf[..self.pos]).await?;
+            match self.inner.write_all(&self.buf[..self.pos]).await {
+                Ok(()) => {}
+                Err(WriteAllError::WriteZero) => {}
+                Err(WriteAllError::Other(e)) => return Err(e),
+            }
             self.pos = 0;
         }
 
