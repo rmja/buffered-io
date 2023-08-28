@@ -25,7 +25,10 @@ impl<T: Read + Write> Read for BufferedWrite<'_, T> {
     }
 }
 
-impl<T: Write> Write for BufferedWrite<'_, T> {
+impl<T: Write> Write for BufferedWrite<'_, T>
+where
+    T::Error: From<WriteAllError<T::Error>>,
+{
     async fn write(&mut self, buf: &[u8]) -> Result<usize, Self::Error> {
         if buf.is_empty() {
             return Ok(0);
