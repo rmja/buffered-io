@@ -4,7 +4,7 @@
 [![crates.io](https://img.shields.io/crates/v/buffered-io.svg)](https://crates.io/crates/buffered-io)
 [![docs.rs](https://docs.rs/buffered-io/badge.svg)](https://docs.rs/buffered-io)
 
-The `buffered-io` crate implements buffering for the `embedded-io` `Read` and `Write` traits.
+The `buffered-io` crate implements buffering for the `embedded-io`/`embedded-io-async` `Read` and `Write` traits.
 
 ## Example
 
