@@ -60,11 +60,7 @@ where
 
     async fn flush(&mut self) -> Result<(), Self::Error> {
         if self.pos > 0 {
-            match self.inner.write_all(&self.buf[..self.pos]).await {
-                Ok(()) => {}
-                Err(WriteAllError::WriteZero) => {}
-                Err(WriteAllError::Other(e)) => return Err(e),
-            }
+            self.inner.write_all(&self.buf[..self.pos]).await?;
             self.pos = 0;
         }
 
