@@ -1,4 +1,4 @@
-use embedded_io_async::{Read, Write, WriteAllError};
+use embedded_io_async::{Read, Write};
 
 /// A buffered [`Read`]
 ///
@@ -24,7 +24,7 @@ impl<T: Read + Write> Write for BufferedRead<'_, T> {
         self.inner.write(buf).await
     }
 
-    async fn write_all(&mut self, buf: &[u8]) -> Result<(), WriteAllError<Self::Error>> {
+    async fn write_all(&mut self, buf: &[u8]) -> Result<(), Self::Error> {
         self.inner.write_all(buf).await
     }
 

@@ -1,6 +1,6 @@
 [package]
 name = "buffered-io"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 description = "Bufferering types for embedded-io"
 readme = "README.md"
@@ -14,10 +14,10 @@ exclude = [".github"]
 async = ["embedded-io-async"]
 
 [dependencies]
-embedded-io = { version = "0.5" }
-embedded-io-async = { version = "0.5", optional = true }
+embedded-io = { version = "0.6" }
+embedded-io-async = { version = "0.6", optional = true }
 
 [dev-dependencies]
-embedded-io-async = { version = "0.5", features = ["std"] }
-embedded-io-adapters = { version = "0.5", features = ["std"] }
+embedded-io-async = { version = "0.6", features = ["std"] }
+embedded-io-adapters = { version = "0.6", features = ["std"] }
 tokio = { version = "1", features = ["macros", "rt"] }
