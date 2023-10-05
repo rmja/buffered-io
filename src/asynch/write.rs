@@ -1,4 +1,4 @@
-use embedded_io_async::{Read, Write, WriteAllError};
+use embedded_io_async::{Read, Write};
 
 /// A buffered [`Write`]
 ///
@@ -25,10 +25,7 @@ impl<T: Read + Write> Read for BufferedWrite<'_, T> {
     }
 }
 
-impl<T: Write> Write for BufferedWrite<'_, T>
-where
-    T::Error: From<WriteAllError<T::Error>>,
-{
+impl<T: Write> Write for BufferedWrite<'_, T> {
     async fn write(&mut self, buf: &[u8]) -> Result<usize, Self::Error> {
         if buf.is_empty() {
             return Ok(0);
