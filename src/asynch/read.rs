@@ -11,12 +11,27 @@ pub struct BufferedRead<'buf, T: Read> {
 }
 
 impl<'buf, T: Read> BufferedRead<'buf, T> {
+    /// Create a new buffered reader
     pub fn new(inner: T, buf: &'buf mut [u8]) -> Self {
         Self {
             inner,
             buf,
             offset: 0,
             available: 0,
+        }
+    }
+
+    /// Create a new buffered reader with the first `available` bytes readily available at `offset`.
+    ///
+    /// This is useful if for some reason the inner reader was previously consumed by a greedy reader
+    /// in a way such that the BufferedRead must inherit these excess bytes.
+    pub fn new_with_data(inner: T, buf: &'buf mut [u8], offset: usize, available: usize) -> Self {
+        assert!(offset + available <= buf.len());
+        Self {
+            inner,
+            buf,
+            offset,
+            available,
         }
     }
 }
