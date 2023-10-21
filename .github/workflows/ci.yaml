@@ -22,11 +22,9 @@ jobs:
           - --no-default-features
           - --features async
     steps:
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@master
       with:
-        profile: minimal
         toolchain: nightly-2023-10-21
-        override: true
         components: clippy
     - uses: actions/checkout@v3
     - name: Build
