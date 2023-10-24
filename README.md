@@ -9,11 +9,17 @@ The `buffered-io` crate implements buffering for the `embedded-io`/`embedded-io-
 ## Example
 
 ```rust
-let uart_tx = ...;
-let mut write_buf = [0; 120];
-let buffering = BufferedWrite::new(uart_tx, &mut write_buf);
-buffering.write(b"hello").await?; // This write is buffered
-buffering.write(b" ").await?; // This write is also buffered
-buffering.write(b"world").await?; // This write is also buffered
-buffering.flush().await?; // The string "hello world" is written to uart in one write
+#[cfg(feature = "async")]
+tokio_test::block_on(async {
+    use buffered_io::asynch::BufferedWrite;
+    use embedded_io_async::Write;
+    
+    let uart_tx = Vec::new(); // The underlying uart peripheral implementing Write to where buffered bytes are written
+    let mut write_buf = [0; 120];
+    let mut buffering = BufferedWrite::new(uart_tx, &mut write_buf);
+    buffering.write(b"hello").await.unwrap(); // This write is buffered
+    buffering.write(b" ").await.unwrap(); // This write is also buffered
+    buffering.write(b"world").await.unwrap(); // This write is also buffered
+    buffering.flush().await.unwrap(); // The string "hello world" is written to uart in one write
+})
 ```
