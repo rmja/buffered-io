@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 #![cfg_attr(not(test), no_std)]
 #![allow(unknown_lints, async_fn_in_trait)]
 #![allow(stable_features)]
