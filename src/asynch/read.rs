@@ -47,7 +47,7 @@ impl<'buf, T: Read> BufferedRead<'buf, T> {
         self.available
     }
 
-    /// Get the inner reader
+    /// Get the inner reader if there are no currently buffered, available bytes
     pub fn bypass(&mut self) -> Result<&mut T, BypassError> {
         match self.available {
             0 => Ok(&mut self.inner),
