@@ -1,5 +1,7 @@
 use embedded_io_async::{BufRead, Read, Write};
 
+use super::BypassError;
+
 /// A buffered [`Read`]
 ///
 /// The BufferedRead will read into the provided buffer to avoid small reads to the inner reader.
@@ -33,6 +35,29 @@ impl<'buf, T: Read> BufferedRead<'buf, T> {
             offset,
             available,
         }
+    }
+
+    /// Get whether there are any bytes readily available
+    pub fn is_empty(&self) -> bool {
+        self.available == 0
+    }
+
+    /// Get the number of bytes that are readily availbale
+    pub fn available(&self) -> usize {
+        self.available
+    }
+
+    /// Get the inner reader
+    pub fn bypass(&mut self) -> Result<&mut T, BypassError> {
+        match self.available {
+            0 => Ok(&mut self.inner),
+            _ => Err(BypassError),
+        }
+    }
+
+    /// Release and get the inner reader
+    pub fn release(self) -> T {
+        self.inner
     }
 }
 

@@ -1,5 +1,7 @@
 use embedded_io_async::{Read, Write};
 
+use super::BypassError;
+
 /// A buffered [`Write`]
 ///
 /// The BufferedWrite will write into the provided buffer to avoid small writes to the inner writer.
@@ -12,6 +14,29 @@ pub struct BufferedWrite<'buf, T: Write> {
 impl<'buf, T: Write> BufferedWrite<'buf, T> {
     pub fn new(inner: T, buf: &'buf mut [u8]) -> Self {
         Self { inner, buf, pos: 0 }
+    }
+
+    /// Get whether there are any bytes currently buffered
+    pub fn is_empty(&self) -> bool {
+        self.pos == 0
+    }
+
+    /// Get the number of bytes that are currently buffered but not yet written to the inner writer
+    pub fn written(&self) -> usize {
+        self.pos
+    }
+
+    /// Get the inner writer
+    pub fn bypass(&mut self) -> Result<&mut T, BypassError> {
+        match self.pos {
+            0 => Ok(&mut self.inner),
+            _ => Err(BypassError),
+        }
+    }
+
+    /// Release and get the inner writer
+    pub fn release(self) -> T {
+        self.inner
     }
 }
 
