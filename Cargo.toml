@@ -10,12 +10,9 @@ license = "MIT / Apache-2.0"
 keywords = ["embedded", "buffer", "embedded-io", "read", "write"]
 exclude = [".github"]
 
-[features]
-async = ["embedded-io-async"]
-
 [dependencies]
 embedded-io = { version = "0.6" }
-embedded-io-async = { version = "0.6", optional = true }
+embedded-io-async = { version = "0.6" }
 
 [dev-dependencies]
 embedded-io-async = { version = "0.6", features = ["std"] }
