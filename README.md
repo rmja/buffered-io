@@ -9,7 +9,6 @@ The `buffered-io` crate implements buffering for the `embedded-io`/`embedded-io-
 ## Example
 
 ```rust
-#[cfg(feature = "async")]
 tokio_test::block_on(async {
     use buffered_io::asynch::BufferedWrite;
     use embedded_io_async::Write;
