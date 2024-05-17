@@ -48,6 +48,13 @@ impl<T: Read + Write> Read for BufferedWrite<'_, T> {
     async fn read(&mut self, buf: &mut [u8]) -> Result<usize, Self::Error> {
         self.inner.read(buf).await
     }
+
+    async fn read_exact(
+        &mut self,
+        buf: &mut [u8],
+    ) -> Result<(), embedded_io::ReadExactError<Self::Error>> {
+        self.inner.read_exact(buf).await
+    }
 }
 
 impl<T: Write> Write for BufferedWrite<'_, T> {
