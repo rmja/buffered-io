@@ -34,6 +34,14 @@ impl<'buf, T: Write> BufferedWrite<'buf, T> {
         }
     }
 
+    /// Get the inner writer if there are no currently buffered, written bytes, and rent the buffer
+    pub fn bypass_with_buf(&mut self) -> Result<(&mut T, &mut [u8]), BypassError> {
+        match self.pos {
+            0 => Ok((&mut self.inner, self.buf)),
+            _ => Err(BypassError),
+        }
+    }
+
     /// Release and get the inner writer
     pub fn release(self) -> T {
         self.inner
