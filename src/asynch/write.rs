@@ -52,6 +52,11 @@ impl<'buf, T: Write> BufferedWrite<'buf, T> {
         }
     }
 
+    /// Split the writer to get the inner components
+    pub fn split(&mut self) -> (&mut T, &mut [u8], usize) {
+        (&mut self.inner, self.buf, self.pos)
+    }
+
     /// Release and get the inner writer
     pub fn release(self) -> T {
         self.inner
