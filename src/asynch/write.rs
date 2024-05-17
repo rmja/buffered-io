@@ -12,8 +12,18 @@ pub struct BufferedWrite<'buf, T: Write> {
 }
 
 impl<'buf, T: Write> BufferedWrite<'buf, T> {
+    /// Create a new buffered writer
     pub fn new(inner: T, buf: &'buf mut [u8]) -> Self {
         Self { inner, buf, pos: 0 }
+    }
+
+    /// Create a new buffered writer with a pre-polulated buffer
+    pub fn new_with_data(inner: T, buf: &'buf mut [u8], written: usize) -> Self {
+        Self {
+            inner,
+            buf,
+            pos: written,
+        }
     }
 
     /// Get whether there are any bytes currently buffered
