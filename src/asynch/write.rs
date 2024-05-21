@@ -36,6 +36,11 @@ impl<'buf, T: Write> BufferedWrite<'buf, T> {
         self.pos
     }
 
+    /// Clear the currently buffered, written bytes
+    pub fn clear(&mut self) {
+        self.pos = 0;
+    }
+
     /// Get the inner writer if there are no currently buffered, written bytes
     pub fn bypass(&mut self) -> Result<&mut T, BypassError> {
         match self.pos {
