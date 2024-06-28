@@ -96,17 +96,23 @@ impl<T: Write> Write for BufferedWrite<'_, T> {
         }
 
         let buffered = usize::min(buf.len(), self.buf.len() - self.pos);
-        if buffered > 0 {
-            self.buf[self.pos..self.pos + buffered].copy_from_slice(&buf[..buffered]);
-            self.pos += buffered;
-        }
+        assert!(buffered > 0);
 
-        if self.pos == self.buf.len() {
+        let mut pos = self.pos;
+        self.buf[pos..pos + buffered].copy_from_slice(&buf[..buffered]);
+        pos += buffered;
+
+        if pos < self.buf.len() {
+            // The buffer to write could fit in the buffer
+            self.pos = pos;
+        } else {
             // The buffer is full
             let written = self.inner.write(self.buf).await?;
-            if written < self.pos {
-                self.buf.copy_within(written..self.pos, 0);
-                self.pos -= written;
+
+            // We only assign self.pos _after_ we are sure that the write has completed successfully
+            if written < pos {
+                self.buf.copy_within(written..pos, 0);
+                self.pos = pos - written;
             } else {
                 self.pos = 0;
             }
@@ -127,6 +133,8 @@ impl<T: Write> Write for BufferedWrite<'_, T> {
 
 #[cfg(test)]
 mod tests {
+    use embedded_io::{Error, ErrorKind, ErrorType};
+
     use super::*;
 
     #[tokio::test]
@@ -173,6 +181,58 @@ mod tests {
         assert_eq!(7, buffered.write(&[2, 3, 4, 5, 6, 7, 8, 9]).await.unwrap());
         assert_eq!(0, buffered.pos);
         assert_eq!(8, buffered.inner.len());
+    }
+
+    #[tokio::test]
+    async fn large_write_when_not_empty_can_handle_write_errors() {
+        let mut inner = UnstableWrite::default();
+        inner.writeable.push(0); // Return error
+        inner.writeable.push(8); // Write all bytes
+        let mut buf = [0; 8];
+        let mut buffered = BufferedWrite::new(&mut inner, &mut buf);
+
+        assert_eq!(1, buffered.write(&[1]).await.unwrap());
+        assert_eq!(1, buffered.pos);
+        assert_eq!(0, buffered.inner.written.len());
+
+        assert!(buffered.write(&[2, 3, 4, 5, 6, 7, 8]).await.is_err());
+
+        assert_eq!(7, buffered.write(&[2, 3, 4, 5, 6, 7, 8]).await.unwrap());
+        assert_eq!(0, buffered.pos);
+        assert_eq!(8, buffered.inner.written.len());
+    }
+
+    #[derive(Default)]
+    struct UnstableWrite {
+        written: Vec<u8>,
+        writes: usize,
+        writeable: Vec<usize>,
+    }
+
+    #[derive(Debug)]
+    struct UnstableError;
+
+    impl Error for UnstableError {
+        fn kind(&self) -> ErrorKind {
+            ErrorKind::Other
+        }
+    }
+
+    impl ErrorType for UnstableWrite {
+        type Error = UnstableError;
+    }
+
+    impl Write for UnstableWrite {
+        async fn write(&mut self, buf: &[u8]) -> Result<usize, Self::Error> {
+            let written = self.writeable[self.writes];
+            self.writes += 1;
+            if written > 0 {
+                self.written.extend_from_slice(&buf[..written]);
+                Ok(written)
+            } else {
+                Err(UnstableError)
+            }
+        }
     }
 
     #[tokio::test]
