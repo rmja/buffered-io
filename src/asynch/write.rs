@@ -98,21 +98,22 @@ impl<T: Write> Write for BufferedWrite<'_, T> {
         let buffered = usize::min(buf.len(), self.buf.len() - self.pos);
         assert!(buffered > 0);
 
-        let mut pos = self.pos;
-        self.buf[pos..pos + buffered].copy_from_slice(&buf[..buffered]);
-        pos += buffered;
+        let mut new_pos = self.pos;
+        self.buf[new_pos..new_pos + buffered].copy_from_slice(&buf[..buffered]);
+        new_pos += buffered;
 
-        if pos < self.buf.len() {
+        if new_pos < self.buf.len() {
             // The buffer to write could fit in the buffer
-            self.pos = pos;
+            self.pos = new_pos;
         } else {
             // The buffer is full
             let written = self.inner.write(self.buf).await?;
 
             // We only assign self.pos _after_ we are sure that the write has completed successfully
-            if written < pos {
-                self.buf.copy_within(written..pos, 0);
-                self.pos = pos - written;
+            if written < new_pos {
+                // We only partially wrote the inner buffer
+                self.buf.copy_within(written..new_pos, 0);
+                self.pos = new_pos - written;
             } else {
                 self.pos = 0;
             }
