@@ -213,6 +213,14 @@ mod tests {
     #[derive(Debug)]
     struct UnstableError;
 
+    impl core::fmt::Display for UnstableError {
+        fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            write!(f, "UnstableError")
+        }
+    }
+
+    impl std::error::Error for UnstableError {}
+
     impl Error for UnstableError {
         fn kind(&self) -> ErrorKind {
             ErrorKind::Other
@@ -233,6 +241,10 @@ mod tests {
             } else {
                 Err(UnstableError)
             }
+        }
+
+        async fn flush(&mut self) -> Result<(), Self::Error> {
+            Ok(())
         }
     }
 
