@@ -10,7 +10,7 @@ The `buffered-io` crate implements buffering for the `embedded-io`/`embedded-io-
 
 ```rust
 tokio_test::block_on(async {
-    use buffered_io::asynch::BufferedWrite;
+    use buffered_io::BufferedWrite;
     use embedded_io_async::Write;
     
     let uart_tx = Vec::new(); // The underlying uart peripheral implementing Write to where buffered bytes are written
