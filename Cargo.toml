@@ -5,14 +5,17 @@ edition = "2021"
 description = "Bufferering types for embedded-io"
 readme = "README.md"
 repository = "https://github.com/rmja/buffered-io"
-authors = ["Rasmus Melchior Jacobsen <rmja@laesoe.org>"]
+authors = ["Rasmus Melchior Jacobsen <rmja@laesoe.org>", "Tage Johansson"]
 license = "MIT / Apache-2.0"
 keywords = ["embedded", "buffer", "embedded-io", "read", "write"]
 exclude = [".github"]
 
+[features]
+async = ["dep:embedded-io-async"]
+
 [dependencies]
 embedded-io = { version = "0.7" }
-embedded-io-async = { version = "0.7" }
+embedded-io-async = { version = "0.7", optional = true }
 
 [dev-dependencies]
 embedded-io-async = { version = "0.7", features = ["std"] }
